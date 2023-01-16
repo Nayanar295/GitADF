@@ -1,0 +1,52 @@
+{
+	"name": "df_copy_csv_Fiter",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_sa_pdpg2",
+						"type": "DatasetReference"
+					},
+					"name": "sourceCSVFile"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_azure_da_csv",
+						"type": "DatasetReference"
+					},
+					"name": "sinkSales"
+				}
+			],
+			"transformations": [
+				{
+					"name": "FilterSalesYear"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Country as string,",
+				"          Year as integer,",
+				"          Product_Type as string,",
+				"          Sales as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceCSVFile",
+				"sourceCSVFile filter(Year==2017) ~> FilterSalesYear",
+				"FilterSalesYear sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Sales_2017.csv'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkSales"
+			]
+		}
+	}
+}

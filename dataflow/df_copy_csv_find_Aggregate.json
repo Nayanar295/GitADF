@@ -1,0 +1,54 @@
+{
+	"name": "df_copy_csv_find_Aggregate",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_sa_pdpg2",
+						"type": "DatasetReference"
+					},
+					"name": "sourceCSVFile"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_azure_da_csv",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "AggregateResult"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Country as string,",
+				"          Year as short,",
+				"          Product_Type as string,",
+				"          Sales as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceCSVFile",
+				"sourceCSVFile aggregate(groupBy(Country),",
+				"     {Total Sales} = sum(Sales),",
+				"          {Max Sales} = max(Sales),",
+				"          {Min Sales} = min(Sales)) ~> AggregateResult",
+				"AggregateResult sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}

@@ -1,0 +1,90 @@
+{
+	"name": "pl_copy_github_to_DL",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy Sales data Http to DL",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "HttpReadSettings",
+							"requestMethod": "GET"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_input_csvdata_http",
+						"type": "DatasetReference",
+						"parameters": {
+							"pRelativeGitURL": {
+								"value": "@pipeline().parameters.pSourceRelativeURL",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_output_csv_data_dl",
+						"type": "DatasetReference",
+						"parameters": {
+							"pFileName": {
+								"value": "@pipeline().parameters.pSinkFileName",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			}
+		],
+		"parameters": {
+			"pSourceRelativeURL": {
+				"type": "string"
+			},
+			"pSinkFileName": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "copyDataFromGithubToDL"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-01-12T00:05:08Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

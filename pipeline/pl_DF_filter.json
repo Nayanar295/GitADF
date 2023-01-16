@@ -1,0 +1,37 @@
+{
+	"name": "pl_DF_filter",
+	"properties": {
+		"activities": [
+			{
+				"name": "Data Flow Filter",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "df_copy_csv_Fiter",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "Dataflow"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-12-22T05:48:12Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

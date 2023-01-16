@@ -1,0 +1,55 @@
+{
+	"name": "pl_paymentDetails",
+	"properties": {
+		"activities": [
+			{
+				"name": "Data flowCsutomer",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "df_CustomerOrderPayment_transformation",
+						"type": "DataFlowReference",
+						"parameters": {
+							"pminAge": {
+								"value": "@pipeline().parameters.minAge",
+								"type": "Expression"
+							},
+							"pmaxAge": {
+								"value": "@pipeline().parameters.maxAge",
+								"type": "Expression"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"parameters": {
+			"minAge": {
+				"type": "string"
+			},
+			"maxAge": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "mappingDFPart1New"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-01-08T17:23:28Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

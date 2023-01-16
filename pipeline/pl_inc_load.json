@@ -1,0 +1,166 @@
+{
+	"name": "pl_inc_load",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get Last Updated date",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "select [LastLoadDate] as LastLoadDate\nfrom tblControl",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "ds_azure_sql_table_control",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "Get Max Modified date",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "Select max([Last_m]) as Last_m\nfrom tbluser",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "ds_azure_sql_table_source",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "Copy new data",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Get Max Modified date",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Get Last Updated date",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "Select * from tbluser\nWhere Last_m <= '@{activity('Get Max Modified date').output.firstRow.Last_m}' And   Last_m > '@{activity('Get Last Updated date').output.firstRow.LastLoadDate}'",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_azure_sql_table_source",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_azure_sql_table_destination",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Update control table",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy new data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SPUpdateLoadInfo]",
+					"storedProcedureParameters": {
+						"ModifiedDate": {
+							"value": {
+								"value": "@activity('Get Max Modified date').output.firstRow.Last_m",
+								"type": "Expression"
+							},
+							"type": "Datetime"
+						},
+						"TableName": {
+							"value": "'tbluser'",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase_LS",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"folder": {
+			"name": "Proj1"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-12-12T00:15:14Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

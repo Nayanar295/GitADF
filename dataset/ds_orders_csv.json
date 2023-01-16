@@ -1,0 +1,42 @@
+{
+	"name": "ds_orders_csv",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_sa_g2_pdp",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "Orders.csv",
+				"folderPath": "original",
+				"fileSystem": "data"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "order_id",
+				"type": "String"
+			},
+			{
+				"name": "customer_id",
+				"type": "String"
+			},
+			{
+				"name": "Store_id",
+				"type": "String"
+			},
+			{
+				"name": "Date",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

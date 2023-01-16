@@ -1,0 +1,126 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_azure_sql_table_source",
+						"type": "DatasetReference"
+					},
+					"name": "sourceData"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_azure_sql_table_destination",
+						"type": "DatasetReference"
+					},
+					"name": "destinationData"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_azure_sql_table_destination",
+						"type": "DatasetReference"
+					},
+					"name": "sinkData"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_azure_sql_table_destination",
+						"type": "DatasetReference"
+					},
+					"name": "sinkData2"
+				}
+			],
+			"transformations": [
+				{
+					"name": "existsOrNot1"
+				},
+				{
+					"name": "existsOrNot2"
+				},
+				{
+					"name": "alterRowData"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Key as integer,",
+				"          Name as string,",
+				"          Phone as string,",
+				"          Last_m as date",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> sourceData",
+				"source(output(",
+				"          Key as integer,",
+				"          Name as string,",
+				"          Phone as string,",
+				"          Last_m as date",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> destinationData",
+				"sourceData, destinationData exists(sourceData@Key == destinationData@Key,",
+				"     negate:true,",
+				"     broadcast: 'auto')~> existsOrNot1",
+				"sourceData, destinationData exists(sourceData@Key == destinationData@Key,",
+				"     negate:false,",
+				"     broadcast: 'auto')~> existsOrNot2",
+				"existsOrNot2 alterRow(updateIf(true())) ~> alterRowData",
+				"existsOrNot1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          Key as integer,",
+				"          Name as string,",
+				"          Phone as string,",
+				"          Last_m as date",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 1,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          Key,",
+				"          Name,",
+				"          Phone,",
+				"          Last_m",
+				"     )) ~> sinkData",
+				"alterRowData sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          Key as integer,",
+				"          Name as string,",
+				"          Phone as string,",
+				"          Last_m as date",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:['Key'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          Key,",
+				"          Name,",
+				"          Phone,",
+				"          Last_m",
+				"     )) ~> sinkData2"
+			]
+		}
+	}
+}

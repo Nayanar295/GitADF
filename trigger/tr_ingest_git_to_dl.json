@@ -1,0 +1,28 @@
+{
+	"name": "tr_ingest_git_to_dl",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "pl_copy_github_to_DL",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"pSourceRelativeURL": "sarafupm/step2c/raw/main/data/dataNov-19-2019_1.csv",
+					"pSinkFileName": "Sales_1.csv"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2023-01-12T00:12:11Z",
+				"timeZone": "UTC"
+			}
+		}
+	}
+}
