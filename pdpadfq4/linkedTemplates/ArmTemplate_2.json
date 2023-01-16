@@ -1,0 +1,311 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "pdpadfq4"
+		},
+		"tr_ingest_git_to_dl_properties_pl_copy_github_to_DL_parameters_pSourceRelativeURL": {
+			"type": "string",
+			"defaultValue": "sarafupm/step2c/raw/main/data/dataNov-19-2019_1.csv"
+		},
+		"tr_ingest_git_to_dl_properties_pl_copy_github_to_DL_parameters_pSinkFileName": {
+			"type": "string",
+			"defaultValue": "Sales_1.csv"
+		},
+		"tr_pl_properties_pl_copy_github_to_DL_parameters_pSourceRelativeURL": {
+			"type": "string",
+			"defaultValue": "sarafupm/step2c/raw/main/data/dataNov-19-2019_1.csv"
+		},
+		"tr_pl_properties_pl_copy_github_to_DL_parameters_pSinkFileName": {
+			"type": "string",
+			"defaultValue": "Sales_1.csv"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_DF_filter')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data Flow Filter",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_copy_csv_Fiter",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"sourceCSVFile": {},
+									"sinkSales": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Dataflow"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-22T05:48:12Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_execute_agg_DF')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Find Aggregate Data",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_copy_csv_find_Aggregate",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"sourceCSVFile": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Dataflow"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-22T05:40:33Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_paymentDetails')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flowCsutomer",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_CustomerOrderPayment_transformation",
+								"type": "DataFlowReference",
+								"parameters": {
+									"pminAge": {
+										"value": "@pipeline().parameters.minAge",
+										"type": "Expression"
+									},
+									"pmaxAge": {
+										"value": "@pipeline().parameters.maxAge",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"sourceCustomer": {},
+									"sourcePayments": {},
+									"sourceOrders": {},
+									"sinkPaymementDetails": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"minAge": {
+						"type": "string"
+					},
+					"maxAge": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "mappingDFPart1New"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-01-08T17:23:28Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_scd_demo')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dataflow1",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"sourceData": {},
+									"destinationData": {},
+									"sinkData": {},
+									"sinkData2": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Proj1"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-12T00:15:14Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/tr_ingest_git_to_dl')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "pl_copy_github_to_DL",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"pSourceRelativeURL": "[parameters('tr_ingest_git_to_dl_properties_pl_copy_github_to_DL_parameters_pSourceRelativeURL')]",
+							"pSinkFileName": "[parameters('tr_ingest_git_to_dl_properties_pl_copy_github_to_DL_parameters_pSinkFileName')]"
+						}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2023-01-12T00:12:11Z",
+						"timeZone": "UTC"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/tr_pl')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "pl_copy_github_to_DL",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"pSourceRelativeURL": "[parameters('tr_pl_properties_pl_copy_github_to_DL_parameters_pSourceRelativeURL')]",
+							"pSinkFileName": "[parameters('tr_pl_properties_pl_copy_github_to_DL_parameters_pSinkFileName')]"
+						}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Minute",
+						"interval": 15,
+						"startTime": "2023-01-12T00:00:14Z",
+						"timeZone": "UTC"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}

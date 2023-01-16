@@ -1,0 +1,166 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "pdpadfq4"
+		},
+		"AzureSqlDatabase_Azure_DB_LS_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabase_Azure_DB_LS'"
+		},
+		"AzureSqlDatabase_LS_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabase_LS'"
+		},
+		"LS_AzureSqlDatabase1_dest_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_AzureSqlDatabase1_dest'"
+		},
+		"ls_sa_g2_pdp_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'ls_sa_g2_pdp'"
+		},
+		"AzureBlobStorage_LS_properties_typeProperties_connectionString_secretName": {
+			"type": "string",
+			"defaultValue": "BlobConnections"
+		},
+		"ls_azureKeyVault_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://pdpazurekeyvault.vault.azure.net/"
+		},
+		"ls_http_github_step2c_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://github.com"
+		},
+		"ls_sa_g2_pdp_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://psastep2cadfdp.dfs.core.windows.net/"
+		},
+		"tr_ingest_git_to_dl_properties_pl_copy_github_to_DL_parameters_pSourceRelativeURL": {
+			"type": "string",
+			"defaultValue": "sarafupm/step2c/raw/main/data/dataNov-19-2019_1.csv"
+		},
+		"tr_ingest_git_to_dl_properties_pl_copy_github_to_DL_parameters_pSinkFileName": {
+			"type": "string",
+			"defaultValue": "Sales_1.csv"
+		},
+		"tr_pl_properties_pl_copy_github_to_DL_parameters_pSourceRelativeURL": {
+			"type": "string",
+			"defaultValue": "sarafupm/step2c/raw/main/data/dataNov-19-2019_1.csv"
+		},
+		"tr_pl_properties_pl_copy_github_to_DL_parameters_pSinkFileName": {
+			"type": "string",
+			"defaultValue": "Sales_1.csv"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "pdpadfq4_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"AzureSqlDatabase_Azure_DB_LS_connectionString": {
+						"value": "[parameters('AzureSqlDatabase_Azure_DB_LS_connectionString')]"
+					},
+					"AzureSqlDatabase_LS_connectionString": {
+						"value": "[parameters('AzureSqlDatabase_LS_connectionString')]"
+					},
+					"LS_AzureSqlDatabase1_dest_connectionString": {
+						"value": "[parameters('LS_AzureSqlDatabase1_dest_connectionString')]"
+					},
+					"ls_sa_g2_pdp_accountKey": {
+						"value": "[parameters('ls_sa_g2_pdp_accountKey')]"
+					},
+					"ls_azureKeyVault_properties_typeProperties_baseUrl": {
+						"value": "[parameters('ls_azureKeyVault_properties_typeProperties_baseUrl')]"
+					},
+					"ls_http_github_step2c_properties_typeProperties_url": {
+						"value": "[parameters('ls_http_github_step2c_properties_typeProperties_url')]"
+					},
+					"ls_sa_g2_pdp_properties_typeProperties_url": {
+						"value": "[parameters('ls_sa_g2_pdp_properties_typeProperties_url')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "pdpadfq4_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"AzureBlobStorage_LS_properties_typeProperties_connectionString_secretName": {
+						"value": "[parameters('AzureBlobStorage_LS_properties_typeProperties_connectionString_secretName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'pdpadfq4_ArmTemplate_0')]"
+			]
+		},
+		{
+			"name": "pdpadfq4_ArmTemplate_2",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_2.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"tr_ingest_git_to_dl_properties_pl_copy_github_to_DL_parameters_pSourceRelativeURL": {
+						"value": "[parameters('tr_ingest_git_to_dl_properties_pl_copy_github_to_DL_parameters_pSourceRelativeURL')]"
+					},
+					"tr_ingest_git_to_dl_properties_pl_copy_github_to_DL_parameters_pSinkFileName": {
+						"value": "[parameters('tr_ingest_git_to_dl_properties_pl_copy_github_to_DL_parameters_pSinkFileName')]"
+					},
+					"tr_pl_properties_pl_copy_github_to_DL_parameters_pSourceRelativeURL": {
+						"value": "[parameters('tr_pl_properties_pl_copy_github_to_DL_parameters_pSourceRelativeURL')]"
+					},
+					"tr_pl_properties_pl_copy_github_to_DL_parameters_pSinkFileName": {
+						"value": "[parameters('tr_pl_properties_pl_copy_github_to_DL_parameters_pSinkFileName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'pdpadfq4_ArmTemplate_1')]"
+			]
+		}
+	]
+}
