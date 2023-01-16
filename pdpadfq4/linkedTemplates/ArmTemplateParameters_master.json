@@ -1,0 +1,51 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "pdpadfq4"
+		},
+		"AzureSqlDatabase_Azure_DB_LS_connectionString": {
+			"value": ""
+		},
+		"AzureSqlDatabase_LS_connectionString": {
+			"value": ""
+		},
+		"LS_AzureSqlDatabase1_dest_connectionString": {
+			"value": ""
+		},
+		"ls_sa_g2_pdp_accountKey": {
+			"value": ""
+		},
+		"AzureBlobStorage_LS_properties_typeProperties_connectionString_secretName": {
+			"value": "BlobConnections"
+		},
+		"ls_azureKeyVault_properties_typeProperties_baseUrl": {
+			"value": "https://pdpazurekeyvault.vault.azure.net/"
+		},
+		"ls_http_github_step2c_properties_typeProperties_url": {
+			"value": "https://github.com"
+		},
+		"ls_sa_g2_pdp_properties_typeProperties_url": {
+			"value": "https://psastep2cadfdp.dfs.core.windows.net/"
+		},
+		"tr_ingest_git_to_dl_properties_pl_copy_github_to_DL_parameters_pSourceRelativeURL": {
+			"value": "sarafupm/step2c/raw/main/data/dataNov-19-2019_1.csv"
+		},
+		"tr_ingest_git_to_dl_properties_pl_copy_github_to_DL_parameters_pSinkFileName": {
+			"value": "Sales_1.csv"
+		},
+		"tr_pl_properties_pl_copy_github_to_DL_parameters_pSourceRelativeURL": {
+			"value": "sarafupm/step2c/raw/main/data/dataNov-19-2019_1.csv"
+		},
+		"tr_pl_properties_pl_copy_github_to_DL_parameters_pSinkFileName": {
+			"value": "Sales_1.csv"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}
